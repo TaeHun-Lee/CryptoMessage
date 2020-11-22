@@ -1,5 +1,7 @@
 from quotation_api import *
 from kakao import *
+import time
+import datetime
 
 def get_target_price(ticker):
   df = get_ohlcv(ticker)
@@ -60,14 +62,20 @@ def get_target_test(tickers):
       markets.append((ticker, korean_name))
   return markets
 
-tickers = get_tickers(fiat='KRW')
+while True:
+  try:
+    now = datetime.datetime.now()
+    print('현재 시간 - ', now)
+    tickers = get_tickers(fiat='KRW')
+    bull = get_bull_market(tickers)
+    under_ma5_ma10 = get_under_ma5_ma10(tickers)
+    under_every = get_under_every_stats(tickers)
+    target_test = get_target_test(tickers)
 
-bull = get_bull_market(tickers)
-under_ma5_ma10 = get_under_ma5_ma10(tickers)
-under_every = get_under_every_stats(tickers)
-target_test = get_target_test(tickers)
-
-send_kakao_message('변동성 돌파 + 상승장', bull)
-send_kakao_message('이평선 5-10 이하', under_ma5_ma10)
-send_kakao_message('이평선 5-10-20-60-120 이하', under_every)
-send_kakao_message('특수', target_test)
+    send_kakao_message('변동성 돌파 + 상승장', bull)
+    send_kakao_message('이평선 5-10 이하', under_ma5_ma10)
+    send_kakao_message('이평선 5-10-20-60-120 이하', under_every)
+    send_kakao_message('특수', target_test)
+  except:
+    print('에러 발생')
+  time.sleep(300)
